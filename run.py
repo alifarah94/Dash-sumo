@@ -5,35 +5,38 @@ import dash_html_components as html
 
 
 
-app = dash.Dash()
+app = dash.Dash(__name__, external_stylesheets=['https://codepen.io/amyoshino/pen/jzXypZ.css'])
 app.title = 'Sumo'
-app.css.append_css({'external_url': 'https://codepen.io/amyoshino/pen/jzXypZ.css'})
-
-
-#app.layout = 
-    #html.H1(children='Sumo'),
-    
-    #html.Div(children='''
-    
-  #      Dash: A web application framework for Python.
-   # ''')
-
-app.layout = html.Div([
-        html.Div([
-            html.Div([
-                html.H1(children='Sumo')
-                ],className='six.columns'),
-            html.Div([
-                 html.H2(children='Sumo1'),
-            ],className='six.columns')
-            
-        
-        ],className= "row"),
-    ])
 
 
 
 
+
+
+app.layout = html.Div
+( 
+html.Div(
+    [                                       
+        html.Div(
+            [                                                  
+                html.H1(children=' ',
+                className='six columns'),
+                html.Div(children='Sumo Project')
+            ],className="row"),
+        html.Div(
+            [   
+                html.Div(children=' ',
+                className='three columns'),
+                html.Div(children='sumo',
+                className='nine columns')
+
+            ],className="row")
+
+    ]
+        )
+)
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
+
+
