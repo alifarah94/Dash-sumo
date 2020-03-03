@@ -2,9 +2,68 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 
+
 external_stylesheets = ['https://codepen.io/amyoshino/pen/jzXypZ.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+
+
+
+
+
+import pandas as pd
+from category_encoders import *
+from sklearn.linear_model import LogisticRegression
+
+
+sumo_matches = pd.read_csv('https://query.data.world/s/kp5eazhvwdbrnhhyow5lm4kfywhyvg') # fight result dataframe
+sumo_info = pd.read_csv('https://query.data.world/s/6gckbhyl6klbem3vs25chgcaw65gfa') # sumo info dataframe
+
+sumo_info = sumo_info.dropna()
+sumo_info_2 = sumo_info.drop(['rank','rikishi','prev','prev_w','prev_l'],axis=1)
+
+sumo_1 = sumo_info_2.copy()
+sumo_2 = sumo_info_2.copy()
+
+
+sumo_1 = sumo_1.rename(columns={"id":"rikishi1_id","weight": "rikishi1_weight","height":"rikishi1_height","heya": "rikishi1_heya","shusshin":"rikishi1_shusshin","birth_date": "rikishi1_birthday"})
+sumo_2 = sumo_2.rename(columns={"id":"rikishi2_id","weight": "rikishi2_weight","height":"rikishi2_height","heya": "rikishi2_heya","shusshin":"rikishi2_shusshin","birth_date": "rikishi2_birthday"})
+
+sumo_matches_1 = sumo_matches.loc[(sumo_matches.index%2)==0]
+
+sumo_matches_rik1 = pd.merge(sumo_matches_1,sumo_1,how='left',on=['basho','rikishi1_id'])
+sumo_matches_rik1_rik2 = pd.merge(sumo_matches_rik1,sumo_2,how='left',on=['basho','rikishi2_id'])
+
+df = sumo_matches_rik1_rik2
+df = df.dropna()
+
+target = 'rikishi1_win'
+features = df.drop(columns=['rikishi1_win','rikishi2_win'])
+features = features.columns
+
+train, test = train_test_split(df, train_size=0.80, test_size=0.20, 
+                              stratify=df['rikishi1_win'], random_state=42)
+
+x_train = train[features]
+y_train = train[target]
+
+pipeline = make_pipeline(
+    ce.OrdinalEncoder(),
+    StandardScaler(),
+    LogisticRegression()
+)
+
+pipeline.fit(x_train,y_train)
+
+
+
+
+
+
+
+
+
+
 
 app.layout = html.Div(children=[
     html.Div(
